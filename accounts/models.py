@@ -7,14 +7,18 @@ class UserManager(BaseUserManager):
     def create_user(
         self, email: str, password: str | None = None, **other_fields
     ) -> User: 
-        user = User(email=email, **other_fields)
+        if not email:
+            raise ValueError('Users must have an email address')
+        
+        email = self.normalize_email(email)
+        user = self.model(email=email, **other_fields)
         
         if password: 
             user.set_password(password)
         else:
             user.set_unusable_password()
             
-        user.save()
+        user.save(using=self._db)
         return user
     
     def create_superuser(self, email: str, password: str | None = None, **other_fields) -> User:
@@ -28,7 +32,6 @@ class UserManager(BaseUserManager):
             raise ValueError("Superuser must be assigned to is_superuser=True.")
         
         return self.create_user(email, password, **other_fields)
-    
     
 
 class User(AbstractUser):
@@ -50,14 +53,12 @@ class User(AbstractUser):
 
     objects = UserManager()
 
-
     def get_full_name(self) -> str:
         if self.first_name and self.last_name:
             return f"{self.first_name} {self.last_name}"
         else: 
             return self.username
        
-
     def get_short_name(self) -> str:
         if self.first_name and self.last_name:
             return f"{self.first_name[0]}{self.last_name}"
