@@ -11,5 +11,5 @@ urlpatterns = [
     path('users/login', views.account_login, name='account-login'),
     path('users', views.account_registration, name="account-registration"),
     path('user', views.UserView.as_view(), name='user-account'),
-    path('', include(profile_router.urls))
+    path('', include(profile_router.urls)),
 ]
