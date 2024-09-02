@@ -9,56 +9,52 @@ from accounts.models import User
 from accounts.serializers import UserSerializer, ProfileSerializer
 
 
-@api_view(['POST',])
+@api_view(['POST'])
 def account_registration(request):
-    try:
-        user_data = request.data.get('user')
-        
-        serializer = UserSerializer(data=user_data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()  
-        return Response({"user": serializer.data}, status=status.HTTP_201_CREATED)
+    user_data = request.data.get('user')
+    if not user_data:
+        return Response({"errors": {"body": ["User data must be provided."]}}, status=status.HTTP_400_BAD_REQUEST)
     
-    except Exception:
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+    serializer = UserSerializer(data=user_data)
+    serializer.is_valid(raise_exception=True)
+    serializer.save()  
+    return Response({"user": serializer.data}, status=status.HTTP_201_CREATED)
 
 
-@api_view(['POST',])
+@api_view(['POST'])
 def account_login(request):
-    try:
-        user_data = request.data.get('user')
-        user = authenticate(email=user_data['email'], password=user_data['password']) 
+    user_data = request.data.get('user')
+    if not user_data:
+        return Response({"errors": {"body": ["User data must be provided."]}}, status=status.HTTP_400_BAD_REQUEST)
+    
+    user = authenticate(email=user_data.get('email'), password=user_data.get('password'))
+    if user is not None:
         serializer = UserSerializer(user)
         jwt_token = RefreshToken.for_user(user)
         serializer_data = serializer.data
         serializer_data['token'] = str(jwt_token.access_token)
-        response_data = {
-            "user": serializer_data,
-        }
-        return Response(response_data, status=status.HTTP_202_ACCEPTED)
+        return Response({"user": serializer_data}, status=status.HTTP_202_ACCEPTED)
     
-    except Exception:
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+    return Response({"errors": {"body": ["Invalid credentials."]}}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserView(views.APIView):
     permission_classes = [IsAuthenticated]
     
     def get(self, request, format=None):
-        user = self.request.user
+        user = request.user
         serializer = UserSerializer(user)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
     def put(self, request, format=None, pk=None):
-        user = self.request.user
+        user = request.user
         user_data = request.data.get('user')
+        if not user_data:
+            return Response({"errors": {"body": ["User data must be provided."]}}, status=status.HTTP_400_BAD_REQUEST)
         
-        user.email = user_data['email'] 
-        user.bio = user_data['bio']
-        user.image = user_data['image']
-        user.save()
-        
-        serializer = UserSerializer(user)
+        serializer = UserSerializer(instance=user, data=user_data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
         
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -80,52 +76,27 @@ class ProfileDetailView(viewsets.ModelViewSet):
         try: 
             profile = User.objects.get(username=username)
             serializer = self.get_serializer(profile)
-            return Response({"profile": serializer.data})
-
-        except Exception:
-            return Response({"errors": {
-                "body": [
-                    "Invalid User"
-                ]
-            }})
+            return Response({"profile": serializer.data}, status=status.HTTP_200_OK)
+        except User.DoesNotExist:
+            return Response({"errors": {"body": ["Invalid User"]}}, status=status.HTTP_404_NOT_FOUND)
     
     @action(detail=True, methods=['post', 'delete'])
     def follow(self, request, username=None, *args, **kwargs):
+        profile = self.get_object()
+        follower = request.user
+        
+        if profile == follower:
+            return Response({"errors": {"body": ["Invalid follow Request"]}}, status=status.HTTP_400_BAD_REQUEST)
+        
         if request.method == 'POST':
-          
-            profile = self.get_object()
-            follower = request.user
-            if profile == follower:
-                return Response({"errors": {
-                    "body": [
-                        "Invalid follow Request"
-                    ]
-                }}, status=status.HTTP_400_BAD_REQUEST)
-                
             profile.followers.add(follower)
             serializer = self.get_serializer(profile)
-            return Response({ "profile": serializer.data })  
+            return Response({"profile": serializer.data}, status=status.HTTP_200_OK)
             
         elif request.method == 'DELETE':
-            
-            profile = self.get_object()
-            follower = request.user
-            if profile == follower:
-                return Response({"errors": {
-                    "body": [
-                        "Invalid follow Request"
-                    ]
-                }}, status=status.HTTP_400_BAD_REQUEST)
-                
             if not profile.followers.filter(pk=follower.id).exists():
-                return Response({"errors": {
-                    "body": [
-                        "Invalid follow Request"
-                    ]
-                }}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"errors": {"body": ["Invalid unfollow Request"]}}, status=status.HTTP_400_BAD_REQUEST)
                 
             profile.followers.remove(follower)
             serializer = self.get_serializer(profile)
-            return Response({ "profile": serializer.data })
-        
-            
+            return Response({"profile": serializer.data}, status=status.HTTP_200_OK)
