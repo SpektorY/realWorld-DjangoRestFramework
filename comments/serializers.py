@@ -1,5 +1,4 @@
 from rest_framework import serializers
-
 from comments.models import Comment
 from articles.serializers import AuthorSerializer
 
@@ -9,12 +8,11 @@ class CommentSerializer(serializers.ModelSerializer):
     createdAt = serializers.DateTimeField(source='created', format='%Y-%m-%dT%H:%M:%S.%fZ', required=False)
     updatedAt = serializers.DateTimeField(source='updated', format='%Y-%m-%dT%H:%M:%S.%fZ', required=False)
     body = serializers.CharField(source='content', required=True)
-    
+    likeCount = serializers.IntegerField(source='like_count', read_only=True)
     
     class Meta:
         model = Comment 
-        fields = ['id', 'createdAt', 'updatedAt', 'body', 'author']
-        
+        fields = ['id', 'createdAt', 'updatedAt', 'body', 'author', 'likeCount']
     
     def get_author(self, obj):
         request = self.context.get('request')
