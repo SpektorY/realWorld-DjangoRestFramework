@@ -38,7 +38,7 @@ class ArticleView(viewsets.ModelViewSet):
                 "body": [
                     "Bad Request"
                 ]
-            }}, status=status.HTTP_404_NOT_FOUND)
+            }}, status=status.HTTP_400_BAD_REQUEST)
 
     @action(detail=True, methods=['post', 'delete'])
     def favorite(self, request, slug, *args, **kwargs):
