@@ -4,10 +4,7 @@ from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnl
 from rest_framework.response import Response
 from taggit.models import Tag
 
-from accounts.models import User
-from articles.models import Article
-from articles.serializers import ArticleSerializer, TagSerializer
-from articles.filters import ArticleFilter
+
 
 
 class ArticleView(viewsets.ModelViewSet):
