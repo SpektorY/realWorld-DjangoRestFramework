@@ -24,6 +24,7 @@ def account_registration(request):
 
 @api_view(['POST'])
 def account_login(request):
+def account_login(request):
     user_data = request.data.get('user')
     if not user_data:
         return Response({"errors": {"body": ["User data must be provided."]}}, status=status.HTTP_400_BAD_REQUEST)
