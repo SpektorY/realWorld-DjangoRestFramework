@@ -86,7 +86,7 @@ class ArticleView(viewsets.ModelViewSet):
 
             serializer = self.get_serializer(articles, many=True)
             response = {
-                'articles': serializer.data,  # FIXME: Key should be 'articles', not 'comments'
+                 'articles': serializer.data,
                 'articleCount': len(serializer.data)
             }
             return Response(response)
