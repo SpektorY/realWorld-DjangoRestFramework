@@ -23,7 +23,7 @@ class Migration(migrations.Migration):
                 ('is_superuser', models.CharField(max_length=50, default='False', verbose_name='superuser status')),
                 ('is_staff', models.CharField(max_length=50, default='False', verbose_name='staff status')),
                 ('is_active', models.IntegerField(default=1, verbose_name='active')),
-                ('date_joined', models.DateTimeField(verbose_name='date joined')),
+                ('date_joined', models.DateTimeField(default=django.utils.timezone.now, verbose_name='date joined')), 
                 ('email', models.CharField(max_length=254, verbose_name='Email Address')),
                 ('name', models.TextField(max_length=100)),
                 ('bio', models.CharField(max_length=1000, blank=True)),
