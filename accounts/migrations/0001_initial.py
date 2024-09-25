@@ -28,7 +28,7 @@ class Migration(migrations.Migration):
                 ('name', models.TextField(max_length=100)),
                 ('bio', models.CharField(max_length=1000, blank=True)),
                 ('image', models.CharField(max_length=100, blank=True)),
-                ('followers', models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)),
+                 ('followers', models.ManyToManyField(blank=True, to=settings.AUTH_USER_MODEL)),
                  ('groups', models.ManyToManyField(blank=True, help_text='The groups this user belongs to. A user will get all permissions granted to each of their groups.', related_name='user_set', related_query_name='user', to='auth.group', verbose_name='groups')),
                  ('user_permissions', models.ManyToManyField(blank=True, help_text='Specific permissions for this user.', related_name='user_set', related_query_name='user', to='auth.permission', verbose_name='user permissions')),
             ],
