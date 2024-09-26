@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.IntegerField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),  
                 ('password', models.TextField(max_length=128, verbose_name='password')),
-                ('last_login', models.DateTimeField(blank=True, verbose_name='last login')),
+                ('last_login', models.DateTimeField(blank=True, null=True, verbose_name='last login')),  
                 ('is_superuser', models.CharField(max_length=50, default='False', verbose_name='superuser status')),
                 ('is_staff', models.CharField(max_length=50, default='False', verbose_name='staff status')),
                 ('is_active', models.IntegerField(default=1, verbose_name='active')),
