@@ -180,16 +180,3 @@ class TagView(viewsets.GenericViewSet, mixins.ListModelMixin):
     http_method_names=['get',]
     
 
-    def list(self, request, *args, **kwargs):
-        try:
-            queryset = self.get_queryset()
-            tags = [element.name for element in queryset]
-            serializer = self.get_serializer({ 'tags': tags })
-            return Response(serializer.data)
-            
-        except Exception:
-            return Response({"errors": {
-                "body": [
-                    "Bad Request"
-                ]
-            }}, status=status.HTTP_400_BAD_REQUEST)
