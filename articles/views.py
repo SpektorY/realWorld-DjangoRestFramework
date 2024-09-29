@@ -192,4 +192,4 @@ class TagView(viewsets.GenericViewSet, mixins.ListModelMixin):
                 "body": [
                     "Bad Request"
                 ]
-            }}, status=status.HTTP_404_NOT_FOUND)
+            }}, status=status.HTTP_400_BAD_REQUEST)
