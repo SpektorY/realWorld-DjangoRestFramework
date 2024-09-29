@@ -38,7 +38,7 @@ class ArticleView(viewsets.ModelViewSet):
                 "body": [
                     "Bad Request"
                 ]
-            }}, status=status.HTTP_404_NOT_FOUND)
+            }}, status=status.HTTP_400_BAD_REQUEST)
 
     @action(detail=True, methods=['post', 'delete'])
     def favorite(self, request, slug, *args, **kwargs):
@@ -57,7 +57,7 @@ class ArticleView(viewsets.ModelViewSet):
             elif request.method == 'DELETE':
                 if not article.favorites.filter(id=request.user.id).exists():
                     # FIXME: Raising Exception directly is not a good practice, should use a more specific exception
-                    raise Exception("Article not favorited by user")
+                     raise ValueError("Article not favorited by user")
                 article.favorites.remove(request.user.id)
 
             serializer = self.get_serializer(article)
@@ -74,7 +74,7 @@ class ArticleView(viewsets.ModelViewSet):
                 "body": [
                     "Bad Request"
                 ]
-            }}, status=status.HTTP_400_BAD_REQUEST)  # FIXME: Should return 400 Bad Request, not 404
+             }}, status=status.HTTP_400_BAD_REQUEST)  # Should return 400 Bad Request, not 404
 
     @action(detail=False)
     def feed(self, request, *args, **kwargs):
@@ -115,7 +115,7 @@ class ArticleView(viewsets.ModelViewSet):
                 "body": [
                     "Bad Request"
                 ]
-            }}, status=status.HTTP_400_BAD_REQUEST)  # FIXME: Should return 400 Bad Request, not 404
+             }}, status=status.HTTP_400_BAD_REQUEST)  # Should return 400 Bad Request, not 404
 
     def update(self, request, slug, *args, **kwargs):
         try:
@@ -126,7 +126,7 @@ class ArticleView(viewsets.ModelViewSet):
                     "body": [
                         "Unauthorized Action"
                     ]
-                }}, status=status.HTTP_403_FORBIDDEN)  # FIXME: Should return 403 Forbidden, not 401 Unauthorized
+                 }}, status=status.HTTP_403_FORBIDDEN)  # Should return 403 Forbidden, not 401 Unauthorized
 
             request_data = request.data.get('article')
             serializer = self.get_serializer(article, data=request_data)
@@ -145,7 +145,7 @@ class ArticleView(viewsets.ModelViewSet):
                 "body": [
                     "Bad Request"
                 ]
-            }}, status=status.HTTP_400_BAD_REQUEST)  # FIXME: Should return 400 Bad Request, not 404
+             }}, status=status.HTTP_400_BAD_REQUEST)
 
     def destroy(self, request, slug, *args, **kwargs):
         try:
@@ -159,7 +159,7 @@ class ArticleView(viewsets.ModelViewSet):
                 }}, status=status.HTTP_403_FORBIDDEN)  # FIXME: Should return 403 Forbidden, not 401 Unauthorized
 
             article.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)  # FIXME: Should return 204 No Content, not 200 OK
+             return Response(status=status.HTTP_204_NO_CONTENT)  # Should return 204 No Content, not 200 OK
 
         except Article.DoesNotExist:
             return Response({"errors": {
@@ -172,7 +172,7 @@ class ArticleView(viewsets.ModelViewSet):
                 "body": [
                     "Bad Request"
                 ]
-            }}, status=status.HTTP_400_BAD_REQUEST)  # FIXME: Should return 400 Bad Request, not 404
+             }}, status=status.HTTP_400_BAD_REQUEST)  # Should return 400 Bad Request, not 404
 
 
 class TagView(viewsets.GenericViewSet, mixins.ListModelMixin):
