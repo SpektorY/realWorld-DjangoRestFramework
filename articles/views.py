@@ -57,7 +57,7 @@ class ArticleView(viewsets.ModelViewSet):
             elif request.method == 'DELETE':
                 if not article.favorites.filter(id=request.user.id).exists():
                     # FIXME: Raising Exception directly is not a good practice, should use a more specific exception
-                     raise ValueError("Article not favorited by user")
+                     raise exceptions.NotFound(detail="Article not favorited by user")
                 article.favorites.remove(request.user.id)
 
             serializer = self.get_serializer(article)
