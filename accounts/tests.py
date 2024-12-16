@@ -116,6 +116,14 @@ class UserViewTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
+        self.assertEqual(response.status_code, status.HTTP_200_OK)  
+    
+    def test_user_view_with_invalid_token(self):
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + 'invalidtoken')
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        
+        
 class ProfileDetailViewTestCase(APITestCase):
     def setUp(self):
         self.user = User.objects.create_user(
